@@ -1,4 +1,6 @@
 import socket
+import threading
+import time
 
 def get_local_ip():
 	try:
@@ -10,7 +12,7 @@ def get_local_ip():
 		return "erro"
 
 PORT = 8000
-host = input("digite o endereço:")
+host = 0
 
 local_ip = get_local_ip()
 
@@ -47,7 +49,6 @@ def mensagem_chat():
 	return data
 	
 # cadastra -------------------------------------------------------
-nome = input("digite um nome: ")
 def envia_cadastro(nome):
 	data = mensagem_cadastro(nome)
 	data_encoded = data.encode()
@@ -57,11 +58,8 @@ def envia_cadastro(nome):
 		s.sendall(data_encoded)
 
 		print("cadastro_enviado!")
-envia_cadastro(nome)
 
 # envia mensagem -------------------------------------------------------
-	
-msg = input("mande uma mensagem: ")
 def envia_mensagem(msg):
 	data = mensagem_mensagem(msg)
 	data_encoded = data.encode()
@@ -70,23 +68,35 @@ def envia_mensagem(msg):
 		s.connect((host,PORT))
 		s.sendall(data_encoded)
 		print("mensagem enviada!")
-envia_mensagem(msg)
 
 # solicita n_atualizacoes ----------------------------------------------
-
 def solicita_atualizacoes():
 	data = mensagem_atualizacoes()
 	data_encoded = data.encode()
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.connect((host,PORT))
 		s.sendall(data_encoded)
-		print("solicitacao atualizacoes enviada!")
+		#print("solicitacao atualizacoes enviada!")
 		att = s.recv(1024)
 		att_decoded = att.decode('utf-8')
-		print(f"atualizacoes recebidas : {att_decoded}")
+		#print(f"atualizacoes recebidas : {att_decoded}")
+		return int(att_decoded)
 
-solicita_atualizacoes()
- 
+def solicita_atualizacoes_e_trata():
+	att = 0
+	while True:
+		if not threading.main_thread().is_alive():
+			print('solicita_atualizacoes_e_trata FINALIZADO')
+			break
+		att_atual = solicita_atualizacoes()
+		if att_atual > att:
+			att = att_atual
+			chat = solicita_chat()
+			print_chat_formatado(chat)
+		#print('solicita_atualizacoes_e_trata')
+		time.sleep(0.5)
+	
+
 # solicita o chat atualizado ------------------------------------------
 def solicita_chat():
 	data = mensagem_chat()
@@ -97,7 +107,32 @@ def solicita_chat():
 		print("solicitacao chat enviada!")
 		chat = s.recv(1024)
 		chat_decoded = chat.decode('utf-8')
-		print(f"chat recebido : {chat_decoded}")
+		#print(f"chat recebido : {chat_decoded}")
+		return chat_decoded
 		
-solicita_chat()
+def print_chat_formatado(chat):
+	chat_dic = eval(chat)
+	half_bar = '-' * 12
+	print(f'{half_bar} CHAT {half_bar}')
+	for i in range(len(chat_dic)):
+		 print(chat_dic[i])
+	print("-" * 30)	
+	
+if __name__ == '__main__':
+	#setup:
+	att = 0
+	host = input("Digite o endereço do servidor:\n>>")
+	nome = input("Digite seu nome:\n>>")
+	envia_cadastro(nome)
+	
+	att_thread = threading.Thread(target=solicita_atualizacoes_e_trata)
+	att_thread.start()
+	
+	while True:
+		msg = input("Digite uma mensagem:\n>>")
+		if msg =='q':
+			break
+		else:
+			envia_mensagem(msg)
+	
 	

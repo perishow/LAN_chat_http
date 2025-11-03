@@ -28,7 +28,7 @@ def adicionar_mensagem(chat, n_att, msg, ip, usuarios):
 	n_att +=  1
 	usuario = usuarios[ip]
 	mensagem = msg.split()[7]
-	msg_formatada = f"{usuario} >> {mensagem}"
+	msg_formatada = f"{usuario}: {mensagem}"
 	chat[n_atualizações] = msg_formatada
 	print(n_atualizações)
 	return n_att
