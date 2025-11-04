@@ -27,7 +27,10 @@ def adicionar_mensagem(chat, n_att, msg, ip, usuarios):
 	# formatar mensagem
 	n_att +=  1
 	usuario = usuarios[ip]
-	mensagem = msg.split()[7]
+	mensagem = msg.split('\r\n\r\n')[1]
+	if mensagem.endswith('\n'):
+		mensagem = mensagem[:-1]
+	print(f'MENSAGEM {mensagem} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 	msg_formatada = f"{usuario}: {mensagem}"
 	chat[n_atualizações] = msg_formatada
 	print(n_atualizações)
@@ -51,7 +54,7 @@ try:
 		s.bind((ADDR, PORT))
 		s.listen(5)
 		print(f'servidor funcionando em {ADDR}:{PORT}')
-		while n_atualizações < 4:	
+		while True:	
 			new_sock, addr = s.accept()
 			data = new_sock.recv(1024)
 			data_utf = data.decode('utf-8')
