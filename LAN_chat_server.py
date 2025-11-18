@@ -65,8 +65,8 @@ try:
 			if data_splitted[0] == 'POST':
 				if data_splitted[1] == '/cadastro':
 					cadastrar_nome(ip, data_utf, usuarios)
-					print('usuario_cadastrado')
-					print(usuarios)
+					#print('usuario_cadastrado')
+					#print(usuarios)
 				if data_splitted[1] == '/mensagem':
 					n_atualizações = adicionar_mensagem(chat, n_atualizações, data_utf,ip ,usuarios)
 					print("mensagem adicionada")
@@ -74,10 +74,10 @@ try:
 			if data_splitted[0] == 'GET':
 				print(data_splitted)
 				if data_splitted[1] == '/n_atualizacoes':
-					print('entrou nas atualizacoes')
+					#print('entrou nas atualizacoes')
 					enviar_atualizacoes(new_sock, n_atualizações)
 				if data_splitted[1] == '/chat':
-					print('entrou no if chat')
+					#print('entrou no if chat')
 					enviar_chat(new_sock, chat)
 			# ---------------------
 			
